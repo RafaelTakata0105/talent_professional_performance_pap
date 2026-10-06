@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FBF6EC">
+  <title>Panel de bienestar · Pulso de Talento</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --blue: #8080FF;
+      --navy: #000080;
+      --cream: #FBF6EC;
+      --white: #fffefa;
+      --ink: #171744;
+      --muted: #55556f;
+      --line: #d9d8ec;
+      --green: #17633d;
+      --amber: #81500b;
+      --red: #8d2929;
+      --shadow: 0 9px 26px rgba(0, 0, 128, .07);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { min-width: 320px; min-height: 100vh; margin: 0; padding-bottom: 58px; background: var(--cream); color: var(--ink); line-height: 1.5; }
+    button, select { font: inherit; }
+    button, select { min-height: 48px; border-radius: 12px; }
+    button { border: 2px solid var(--navy); padding: 10px 16px; background: var(--navy); color: white; font-weight: 750; cursor: pointer; }
+    button:hover { background: #17179a; }
+    button:focus-visible, select:focus-visible { outline: 3px solid #4545d7; outline-offset: 3px; }
+    button.secondary { background: transparent; color: var(--navy); }
+    button.secondary:hover { background: #eeeeff; }
+    button:disabled { opacity: .55; cursor: wait; }
+    main { width: min(100% - 32px, 1120px); margin: 0 auto; padding: 24px 0 36px; }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 15px; background: var(--blue); color: var(--navy); font-size: 1.35rem; font-weight: 900; }
+    .brand-name { margin: 0; color: var(--navy); font-size: 1.04rem; font-weight: 850; }
+    .brand-caption { margin: 1px 0 0; color: var(--muted); font-size: .84rem; }
+    .filters { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
+    .filters label { color: var(--muted); font-size: .85rem; font-weight: 750; }
+    .filters select { max-width: 205px; border: 1px solid #8585b8; padding: 8px 32px 8px 12px; background: var(--white); color: var(--ink); }
+
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin: 12px 0 20px; }
+    .eyebrow { margin: 0 0 5px; color: var(--navy); font-size: .78rem; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+    h1 { margin: 0; color: var(--navy); font-size: clamp(1.75rem, 5vw, 2.4rem); line-height: 1.15; }
+    .subtitle { max-width: 690px; margin: 8px 0 0; color: var(--muted); }
+    .period-label { flex: 0 0 auto; color: var(--muted); font-size: .85rem; text-align: right; }
+
+    .privacy-note { display: flex; align-items: flex-start; gap: 11px; margin: 0 0 20px; border: 1px solid #a9a8ed; border-radius: 15px; padding: 13px 15px; background: #eeeeff; color: var(--navy); font-size: .9rem; }
+    .privacy-note strong { display: block; }
+    .privacy-icon { font-size: 1.25rem; line-height: 1.25; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .card { min-width: 0; border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: var(--white); box-shadow: var(--shadow); }
+    .kpi-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: .87rem; font-weight: 750; }
+    .info { display: inline-grid; width: 20px; height: 20px; place-items: center; border: 1px solid #aaa9c9; border-radius: 50%; color: var(--navy); font-size: .73rem; }
+    .kpi-value { display: block; margin: 10px 0 0; color: var(--navy); font-size: clamp(1.8rem, 4vw, 2.25rem); font-weight: 850; line-height: 1.1; }
+    .kpi-foot { display: flex; align-items: center; gap: 6px; margin: 9px 0 0; color: var(--muted); font-size: .8rem; }
+    .delta { color: var(--green); font-weight: 800; }
+    .delta.warn { color: var(--amber); }
+    .kpi-progress { height: 7px; overflow: hidden; margin-top: 13px; border-radius: 99px; background: #e8e7f3; }
+    .kpi-progress span { display: block; height: 100%; border-radius: inherit; background: var(--blue); }
+
+    .content-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-top: 14px; }
+    .card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+    h2 { margin: 0; color: var(--navy); font-size: 1.08rem; }
+    .card-description { margin: 4px 0 0; color: var(--muted); font-size: .82rem; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: .76rem; }
+    .legend li { display: flex; align-items: center; gap: 5px; }
+    .swatch { width: 9px; height: 9px; border-radius: 3px; background: var(--navy); }
+    .swatch.mid { background: var(--blue); }
+    .swatch.light { background: #d9d8ff; }
+    .chart { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-items: end; gap: 12px; height: 188px; padding: 12px 2px 0; }
+    .chart-month { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; }
+    .chart-stack { display: flex; width: min(100%, 42px); height: 142px; flex-direction: column; justify-content: flex-end; overflow: hidden; border-radius: 8px 8px 3px 3px; background: #f0effa; }
+    .chart-stack span { display: block; min-height: 3px; }
+    .chart-stack .high { background: var(--navy); }
+    .chart-stack .steady { background: var(--blue); }
+    .chart-stack .balanced { background: #d9d8ff; }
+    .chart-month small { color: var(--muted); font-size: .76rem; }
+    .chart-caption { margin: 8px 0 0; color: var(--muted); font-size: .77rem; }
+
+    .status-list { display: grid; gap: 14px; }
+    .status-row { display: grid; grid-template-columns: minmax(115px, 1fr) minmax(100px, 1.15fr) 38px; align-items: center; gap: 10px; }
+    .status-name { font-size: .84rem; font-weight: 700; }
+    .bar { height: 11px; overflow: hidden; border-radius: 99px; background: #e8e7f3; }
+    .bar span { display: block; height: 100%; border-radius: inherit; background: var(--blue); }
+    .status-value { color: var(--navy); font-size: .84rem; font-weight: 800; text-align: right; }
+
+    .table-card { margin-top: 14px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid #e8e7f1; vertical-align: middle; }
+    th { color: var(--muted); font-size: .77rem; font-weight: 800; }
+    td { font-size: .86rem; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .team-name { color: var(--ink); font-weight: 750; }
+    .team-count { color: var(--muted); font-size: .78rem; }
+    .trend { color: var(--green); font-weight: 800; white-space: nowrap; }
+    .trend.down { color: var(--amber); }
+    .pill { display: inline-block; border-radius: 99px; padding: 4px 9px; font-size: .75rem; font-weight: 800; white-space: nowrap; }
+    .pill.ok { background: #e2f2e8; color: #155633; }
+    .pill.watch { background: #fff0d9; color: #704406; }
+    .pill.alert { background: #fbe6e2; color: #762020; }
+    .empty-state { padding: 24px 8px; color: var(--muted); text-align: center; }
+    .empty-state[hidden] { display: none; }
+    .data-source { margin: 14px 2px 0; color: var(--muted); font-size: .77rem; }
+    footer { position: fixed; z-index: 4; right: 0; bottom: 0; left: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid #d6d2c7; background: var(--cream); color: var(--navy); font-size: .82rem; font-weight: 800; text-align: center; }
+
+    @media (max-width: 850px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      main { width: min(100% - 24px, 1120px); padding-top: 14px; }
+      .topbar { align-items: flex-start; flex-direction: column; gap: 14px; }
+      .filters { width: 100%; justify-content: flex-start; }
+      .filters label { flex: 0 0 100%; }
+      .filters select { flex: 1; max-width: none; }
+      .page-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .period-label { text-align: left; }
+      .kpi-grid { gap: 9px; }
+      .card { padding: 15px; }
+      .kpi-label { font-size: .78rem; }
+      .kpi-value { font-size: 1.8rem; }
+      .chart { gap: 7px; }
+      .status-row { grid-template-columns: minmax(105px, .9fr) minmax(70px, 1fr) 36px; gap: 7px; }
+      .status-name, .status-value { font-size: .77rem; }
+      .table-card { padding: 14px 10px; }
+      th, td { padding: 10px 8px; }
+    }
+    @media (max-width: 380px) {
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .card-heading { flex-direction: column; }
+      .legend { gap: 7px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="topbar">
+      <div class="brand" aria-label="Pulso de Talento">
+        <div class="brand-mark" aria-hidden="true">P</div>
+        <div>
+          <p class="brand-name">Pulso de Talento</p>
+          <p class="brand-caption">Panel de bienestar de los equipos</p>
+        </div>
+      </div>
+      <div class="filters">
+        <label for="teamFilter">Vista del tablero</label>
+        <select id="teamFilter" aria-label="Filtrar métricas por equipo">
+          <option value="all">Todos los equipos</option>
+          <option value="operations">Operaciones</option>
+          <option value="product">Producto y Tecnología</option>
+          <option value="sales">Ventas y Cuentas</option>
+          <option value="service">Atención a Clientes</option>
+          <option value="finance">Finanzas y Legal</option>
+        </select>
+        <select id="periodFilter" aria-label="Seleccionar periodo">
+          <option value="30">Últimos 30 días</option>
+          <option value="90">Últimos 90 días</option>
+        </select>
+      </div>
+    </header>
+
+    <section aria-labelledby="pageTitle">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">Bienestar antes que vigilancia</p>
+          <h1 id="pageTitle">Pulso general de los equipos</h1>
+          <p class="subtitle">Una vista compartida de energía, carga y bloqueos operativos para orientar apoyos tempranos.</p>
+        </div>
+        <div class="period-label">Periodo: <strong id="periodLabel">Últimos 30 días</strong></div>
+      </div>
+
+      <aside class="privacy-note" aria-label="Aviso sobre privacidad y datos">
+        <span class="privacy-icon" aria-hidden="true">ⓘ</span>
+        <div><strong>Vista agregada y ficticia</strong>Este prototipo no accede, recolecta ni guarda actividad de empleados. No muestra nombres, mensajes, horarios ni resultados individuales. En un sistema real, usa solo datos voluntarios y agrupados; evita desgloses de grupos pequeños.</div>
+      </aside>
+
+      <div class="kpi-grid" aria-label="Indicadores generales">
+        <article class="card">
+          <div class="kpi-label">Índice de energía del equipo <span class="info" title="Promedio agregado de una escala voluntaria de energía" aria-label="Promedio agregado de energía">i</span></div>
+          <strong id="energyValue" class="kpi-value">76<span style="font-size:.55em">/100</span></strong>
+          <p id="energyFoot" class="kpi-foot"><span class="delta">↑ 4 puntos</span> frente al periodo anterior</p>
+          <div class="kpi-progress" role="img" aria-label="Índice de energía: 76 de 100"><span id="energyProgress" style="width:76%"></span></div>
+        </article>
+        <article class="card">
+          <div class="kpi-label">Carga alta reportada <span class="info" title="Porcentaje de respuestas agregadas que indican carga alta" aria-label="Porcentaje agregado de carga alta">i</span></div>
+          <strong id="loadValue" class="kpi-value">18%</strong>
+          <p id="loadFoot" class="kpi-foot"><span class="delta">↓ 3 puntos</span> frente al periodo anterior</p>
+          <div class="kpi-progress" role="img" aria-label="Carga alta reportada: 18 por ciento"><span id="loadProgress" style="width:18%"></span></div>
+        </article>
+        <article class="card">
+          <div class="kpi-label">Bloqueos operativos abiertos <span class="info" title="Bloqueos de proceso reportados por los equipos, sin atribución individual" aria-label="Bloqueos operativos agregados">i</span></div>
+          <strong id="blockersValue" class="kpi-value">12</strong>
+          <p id="blockersFoot" class="kpi-foot">En seguimiento por área</p>
+        </article>
+        <article class="card">
+          <div class="kpi-label">Apoyos acordados completados <span class="info" title="Proporción de apoyos organizacionales con seguimiento completado" aria-label="Proporción agregada de apoyos completados">i</span></div>
+          <strong id="supportValue" class="kpi-value">84%</strong>
+          <p id="supportFoot" class="kpi-foot"><span class="delta">↑ 6 puntos</span> frente al periodo anterior</p>
+          <div class="kpi-progress" role="img" aria-label="Apoyos completados: 84 por ciento"><span id="supportProgress" style="width:84%"></span></div>
+        </article>
+      </div>
+
+      <div class="content-grid">
+        <section class="card" aria-labelledby="trendTitle">
+          <div class="card-heading">
+            <div>
+              <h2 id="trendTitle">Energía reportada por mes</h2>
+              <p class="card-description">Distribución agregada de respuestas voluntarias</p>
+            </div>
+            <ul class="legend" aria-label="Leyenda del gráfico">
+              <li><span class="swatch"></span>Alta</li>
+              <li><span class="swatch mid"></span>Media</li>
+              <li><span class="swatch light"></span>Baja</li>
+            </ul>
+          </div>
+          <div id="energyChart" class="chart" role="img" aria-label="Gráfico apilado de energía reportada en los últimos seis meses"></div>
+          <p class="chart-caption">Porcentaje de respuestas en cada nivel. No representa seguimiento de actividad o productividad personal.</p>
+        </section>
+
+        <section class="card" aria-labelledby="blockersTitle">
+          <div class="card-heading">
+            <div>
+              <h2 id="blockersTitle">Principales facilitadores pendientes</h2>
+              <p class="card-description">Temas operativos mencionados por los equipos</p>
+            </div>
+          </div>
+          <div id="blockerList" class="status-list"></div>
+        </section>
+      </div>
+
+      <section class="card table-card" aria-labelledby="teamsTitle">
+        <div class="card-heading">
+          <div>
+            <h2 id="teamsTitle">Panorama por área</h2>
+            <p class="card-description">Indicadores a nivel de equipo; sin registros por persona.</p>
+          </div>
+          <span class="info" title="Los valores se inventaron únicamente para demostrar el tablero" aria-label="Datos inventados">i</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Equipo</th><th scope="col">Energía</th><th scope="col">Carga alta</th><th scope="col">Bloqueos</th><th scope="col">Tendencia</th><th scope="col">Estado</th></tr>
+            </thead>
+            <tbody id="teamRows"></tbody>
+          </table>
+          <p id="emptyState" class="empty-state" hidden>No hay datos agregados para esta selección.</p>
+        </div>
+        <p class="data-source">Datos completamente ficticios para demostración. En una implementación real, muestra resultados solo si el grupo alcanza un tamaño mínimo que proteja la privacidad.</p>
+      </section>
+    </section>
+  </main>
+  <footer>Prototipo de taller con datos inventados</footer>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const teams = [
+        { id: "operations", name: "Operaciones", energy: 73, highLoad: 22, blockers: 4, trend: -2, state: "Revisar carga", stateClass: "watch", responses: 18, supports: 79, monthly: [69, 21, 10] },
+        { id: "product", name: "Producto y Tecnología", energy: 81, highLoad: 14, blockers: 2, trend: 5, state: "En balance", stateClass: "ok", responses: 16, supports: 91, monthly: [77, 16, 7] },
+        { id: "sales", name: "Ventas y Cuentas", energy: 68, highLoad: 28, blockers: 3, trend: -4, state: "Facilitar apoyo", stateClass: "alert", responses: 14, supports: 72, monthly: [62, 24, 14] },
+        { id: "service", name: "Atención a Clientes", energy: 75, highLoad: 19, blockers: 2, trend: 3, state: "En seguimiento", stateClass: "watch", responses: 20, supports: 86, monthly: [71, 20, 9] },
+        { id: "finance", name: "Finanzas y Legal", energy: 82, highLoad: 11, blockers: 1, trend: 6, state: "En balance", stateClass: "ok", responses: 12, supports: 92, monthly: [79, 15, 6] }
+      ];
+
+      const months = ["May", "Jun", "Jul", "Ago", "Sep", "Oct"];
+      const $ = (id) => document.getElementById(id);
+      const teamFilter = $("teamFilter");
+      const periodFilter = $("periodFilter");
+
+      function currentTeams() {
+        const selectedTeam = teamFilter.value;
+        return selectedTeam === "all" ? teams : teams.filter((team) => team.id === selectedTeam);
+      }
+
+      function average(items, key) {
+        return items.length ? Math.round(items.reduce((total, item) => total + item[key], 0) / items.length) : 0;
+      }
+
+      function changeMarkup(current, previous, higherIsBetter = true) {
+        const difference = current - previous;
+        const direction = difference > 0 ? "↑" : difference < 0 ? "↓" : "→";
+        const favorable = higherIsBetter ? difference >= 0 : difference <= 0;
+        const amount = Math.abs(difference);
+        const unit = amount === 1 ? "punto" : "puntos";
+        return `<span class="delta${favorable ? "" : " warn"}">${direction} ${amount} ${unit}</span> frente al periodo anterior`;
+      }
+
+      function setProgress(id, value, label, unit = "%") {
+        const progress = $(id);
+        progress.style.width = `${Math.max(0, Math.min(value, 100))}%`;
+        progress.parentElement.setAttribute("aria-label", `${label}: ${value}${unit}`);
+      }
+
+      function renderKpis(data) {
+        const energy = average(data, "energy");
+        const highLoad = average(data, "highLoad");
+        const blockers = data.reduce((sum, team) => sum + team.blockers, 0);
+        const supports = average(data, "supports");
+
+        $("energyValue").firstChild.textContent = energy;
+        $("loadValue").textContent = `${highLoad}%`;
+        $("blockersValue").textContent = blockers;
+        $("supportValue").textContent = `${supports}%`;
+        setProgress("energyProgress", energy, "Índice de energía", " de 100");
+        setProgress("loadProgress", highLoad, "Carga alta reportada");
+        setProgress("supportProgress", supports, "Apoyos acordados completados");
+
+        $("energyFoot").innerHTML = changeMarkup(energy, 72);
+        $("loadFoot").innerHTML = changeMarkup(highLoad, 21, false);
+        $("blockersFoot").textContent = `${data.length} ${data.length === 1 ? "área" : "áreas"} con seguimiento`;
+        $("supportFoot").innerHTML = changeMarkup(supports, 78);
+      }
+
+      function renderChart(data) {
+        const chart = $("energyChart");
+        chart.replaceChildren();
+        const totalCount = data.reduce((sum, team) => sum + team.responses, 0);
+        const visibleMonths = Number(periodFilter.value) === 30
+          ? ["Sem 1", "Sem 2", "Sem 3", "Sem 4"]
+          : months.slice(-3);
+        const values = visibleMonths.map((_, index) => {
+          const energy = average(data, "energy") + (index - (visibleMonths.length - 1)) * 2;
+          const low = Math.max(5, Math.round((100 - energy) * .42));
+          const medium = 100 - energy - low;
+          return [energy, medium, low];
+        });
+
+        values.forEach((levels, index) => {
+          const month = document.createElement("div");
+          month.className = "chart-month";
+          const stack = document.createElement("div");
+          stack.className = "chart-stack";
+          stack.setAttribute("aria-hidden", "true");
+          const [high, medium, low] = levels;
+          [[high, "high"], [medium, "steady"], [low, "balanced"]].forEach(([value, className]) => {
+            const segment = document.createElement("span");
+            segment.className = className;
+            segment.style.height = `${value}%`;
+            stack.append(segment);
+          });
+          const label = document.createElement("small");
+          label.textContent = visibleMonths[index];
+          month.append(stack, label);
+          month.setAttribute("aria-label", `${months[index]}: distribución aproximada de energía agregada`);
+          chart.append(month);
+        });
+        chart.setAttribute("aria-label", `Distribución ${periodFilter.value === "30" ? "del último mes" : "de los últimos tres meses"}, ficticia y agregada a partir de ${totalCount} respuestas de ejemplo`);
+      }
+
+      function renderBlockers(data) {
+        const categories = [
+          { label: "Prioridades claras", value: Math.max(10, 70 - average(data, "highLoad")) },
+          { label: "Carga sostenible", value: Math.min(90, 100 - average(data, "highLoad")) },
+          { label: "Herramientas y recursos", value: Math.max(12, 57 - data.reduce((sum, team) => sum + team.blockers, 0)) },
+          { label: "Coordinación entre áreas", value: Math.max(10, 46 - data.length * 2) }
+        ];
+        const list = $("blockerList");
+        list.replaceChildren();
+        categories.forEach((category) => {
+          const row = document.createElement("div");
+          row.className = "status-row";
+          const name = document.createElement("span");
+          name.className = "status-name";
+          name.textContent = category.label;
+          const bar = document.createElement("div");
+          bar.className = "bar";
+          bar.setAttribute("role", "img");
+          bar.setAttribute("aria-label", `${category.value}% de menciones agregadas`);
+          const fill = document.createElement("span");
+          fill.style.width = `${category.value}%`;
+          bar.append(fill);
+          const value = document.createElement("span");
+          value.className = "status-value";
+          value.textContent = `${category.value}%`;
+          row.append(name, bar, value);
+          list.append(row);
+        });
+      }
+
+      function renderTable(data) {
+        const rows = $("teamRows");
+        rows.replaceChildren();
+        $("emptyState").hidden = data.length > 0;
+        data.forEach((team) => {
+          const row = document.createElement("tr");
+          const teamCell = document.createElement("td");
+          const teamName = document.createElement("span");
+          teamName.className = "team-name";
+          teamName.textContent = team.name;
+          const responseCount = document.createElement("span");
+          responseCount.className = "team-count";
+          responseCount.textContent = ` · ${team.responses} respuestas de ejemplo`;
+          teamCell.append(teamName, responseCount);
+
+          const energy = document.createElement("td");
+          energy.textContent = `${team.energy}/100`;
+          const load = document.createElement("td");
+          load.textContent = `${team.highLoad}%`;
+          const blockers = document.createElement("td");
+          blockers.textContent = team.blockers;
+          const trend = document.createElement("td");
+          trend.className = `trend ${team.trend < 0 ? "down" : ""}`;
+          trend.textContent = `${team.trend > 0 ? "↑" : "↓"} ${Math.abs(team.trend)} pts`;
+          const state = document.createElement("td");
+          const pill = document.createElement("span");
+          pill.className = `pill ${team.stateClass}`;
+          pill.textContent = team.state;
+          state.append(pill);
+          row.append(teamCell, energy, load, blockers, trend, state);
+          rows.append(row);
+        });
+      }
+
+      function render() {
+        const data = currentTeams();
+        const period = Number(periodFilter.value);
+        $("periodLabel").textContent = period === 30 ? "Últimos 30 días" : "Últimos 90 días";
+        $("trendTitle").textContent = period === 30 ? "Energía reportada · últimos 30 días" : "Tendencia de energía · últimos 90 días";
+        renderKpis(data);
+        renderChart(data);
+        renderBlockers(data);
+        renderTable(data);
+      }
+
+      teamFilter.addEventListener("change", render);
+      periodFilter.addEventListener("change", render);
+      render();
+    })();
+  </script>
+</body>
+</html>
